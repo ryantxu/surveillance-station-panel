@@ -28,7 +28,7 @@
     <div class="gf-form" ng-repeat="camera in ctrl.cameras">
       <img height="40" width="60" style="background: #333;" ng-src="{{ camera.snapshot_url }}" />
 
-      <editor-checkbox class="gf-form-label width-14" model="camera._show" text="{{ camera.name }}" on-change="ctrl.configChanged()"></editor-checkbox>
+      <editor-checkbox class="gf-form-label width-14" model="camera._show" text="{{ camera.name }}" change="ctrl.configChanged()"></editor-checkbox>
 
       <span class="gf-form-label width-8"><a href="http://{{ camera.host }}/" target="_blank">{{ camera.host }}</a></span>
       <div class="gf-form-label gf-form-label--grow">
@@ -53,6 +53,4 @@
 
 </div>
 
-<!--
 <pre>{{ ctrl.panel | json }}</pre>
--->

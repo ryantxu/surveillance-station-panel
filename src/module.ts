@@ -81,6 +81,7 @@ class SurveillanceStationCtrl extends PanelCtrl {
    
   showFullscreen(camera) {
     console.log( 'TODO, show live popup', camera ); 
+    window.location.href = camera.snapshot_url;
   }
 
   //-----------------
