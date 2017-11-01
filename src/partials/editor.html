@@ -16,6 +16,11 @@
       <span class="gf-form-label width-8">Password</span>
       <input type="password" ng-model="ctrl.panel.passwd" class="gf-form-input width-25" ng-change="ctrl.connectionChanged()"/>
     </div>
+
+    <div class="gf-form">
+      <span class="gf-form-label width-8">_sid</span>
+      <input type="text" ng-model="ctrl.auth.sid" class="gf-form-input width-25" />
+    </div>
   </div>
 </div>
 
@@ -53,4 +58,18 @@
 
 </div>
 
+<!--
 <pre>{{ ctrl.panel | json }}</pre>
+-->
+
+
+<video id="editor_videojs_id" class="video-js vjs-default-skin" controls preload="none" style="width:1024px; height:768px"
+  poster="http://vjs.zencdn.net/v/oceans.png" data-setup="{}">
+  <source src="http://vjs.zencdn.net/v/oceans.mp4" type="video/mp4">
+  <source src="http://vjs.zencdn.net/v/oceans.webm" type="video/webm">
+  <source src="http://vjs.zencdn.net/v/oceans.ogv" type="video/ogg">
+
+  <!-- Tracks need an ending tag thanks to IE9 -->
+  <p class="vjs-no-js">To view this video please enable JavaScript, and consider upgrading to a web browser that <a href="http://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a></p>
+</video>
+

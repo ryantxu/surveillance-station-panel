@@ -1,4 +1,5 @@
 ///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
+///<reference path="../hack/videojs.d.ts" />
 
 import config from 'app/core/config';
 import appEvents from 'app/core/app_events';
@@ -10,7 +11,11 @@ import moment from 'moment';
 
 import './css/sss.css!';
 
+// Video JS
+import './lib/video.js';
+import './lib/video-js.css!';
 
+//videojs.options.flash.swf = "http://example.com/path/to/video-js.swf"
 
 class SurveillanceStationCtrl extends PanelCtrl {
   static templateUrl = 'partials/module.html';
@@ -28,6 +33,7 @@ class SurveillanceStationCtrl extends PanelCtrl {
   };
 
   cameras: Array<any>;
+  player: VideoJSPlayer;
 
   /** @ngInject **/
   constructor($scope, $injector, private templateSrv, private $http, private uiSegmentSrv, private datasourceSrv) {
@@ -45,6 +51,14 @@ class SurveillanceStationCtrl extends PanelCtrl {
   onInitEditMode() {
     this.addEditorTab('Options', 'public/plugins/natel-surveillance-station-panel/partials/editor.html',1);
     this.editorTabIndex = 1;
+
+debugger;
+/**
+    this.player = videojs("editor_videojs_id", {}, () => {
+      // Player (this) is initialized and ready.
+      console.log( 'Player initalized and ready', this.player );
+    });
+    **/
   }
 
   onRefresh() {
@@ -73,6 +87,7 @@ class SurveillanceStationCtrl extends PanelCtrl {
       return;
     }
 
+    this.api_API_Info();
     this.api_ListCameras();
   //  this.api_GetInfo();
     //this.api_AuthLogin();
@@ -105,6 +120,36 @@ class SurveillanceStationCtrl extends PanelCtrl {
   //-----------------
 
 
+  api_API_Info() {
+    console.log( "SYNO.API.Info", this.panel );
+    
+    // auth.cgi?
+    let params = {
+      api: 'SYNO.API.Info',
+      method: 'Query',
+      version: 1,
+      query: 
+        'SYNO.API.Auth,'+
+        'SYNO.SurveillanceStation.Camera,'+
+        'SYNO.SurveillanceStation.Info,'+
+        'SYNO.SurveillanceStation.Streaming,'+
+        'SYNO.SurveillanceStation.VideoStream,'+
+        'SYNO.SurveillanceStation.AudioStream,'+
+        'SYNO.SurveillanceStation.Event'
+    };
+
+    return this.$http({
+      url: this.panel.url + 'query.cgi',
+      method: 'GET',
+      params: params
+    }).then((rsp) => {
+      console.log( "SYNO.API.Info", rsp.data.data );
+    }, err => {
+      console.log( "GetInfo Error", err );
+      this.error = err; //.data.error + " ["+err.status+"]";
+      this.inspector = {error: err};
+    });
+  }
 
   api_AuthLogin() {
     console.log( "Do auth", this.panel );

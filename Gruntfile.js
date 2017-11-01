@@ -20,6 +20,22 @@ module.exports = function(grunt) {
         dest: 'node_modules/grafana-sdk-mocks/app/headers'
       },
 
+      video_js: {
+        expand: true,
+        flatten: false,
+        cwd: 'node_modules/video.js/dist',
+        src: [ '*.js', '*.css', 'font/*', 'lang/*', 'ie8/*' ],
+        dest: 'dist/lib/'
+      },
+
+      video_js2: {
+        expand: true,
+        flatten: false,
+        cwd: 'node_modules/video.js/dist',
+        src: [ '*.js', '*.css', 'font/*', 'lang/*', 'ie8/*' ],
+        dest: 'src/lib/'
+      },
+
       dist_js: {
         expand: true,
         cwd: 'src',
@@ -68,6 +84,7 @@ module.exports = function(grunt) {
           experimentalDecorators: true,
           sourceMap: true,
           noImplicitAny: false,
+          noResolve: false
         }
       }
     },
@@ -110,6 +127,8 @@ module.exports = function(grunt) {
     'copy:dist_css',
     'copy:dist_img',
     'copy:dist_statics',
+    'copy:video_js',
+    'copy:video_js2',
     'string-replace'
   ]);
 };
