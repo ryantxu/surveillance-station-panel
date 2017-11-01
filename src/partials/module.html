@@ -1,2 +1,10 @@
 
-the module...
+<div class="ss-content">
+  <div class="ss-row"> 
+    <div class="ss-cell" ng-repeat="camera in ctrl.cameras" ng-show="camera._show">
+      <a ng-click="ctrl.showFullscreen(camera)">
+        <img ng-src="{{ camera.snapshot_url }}" />
+      </a>
+    </div>
+  </div>
+</div>

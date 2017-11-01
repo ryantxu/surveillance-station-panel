@@ -1,0 +1,88 @@
+
+.flex-grid {
+  display: flex;
+  width:800px;
+  border:1px solid red;
+}
+.flex-grid .col {
+  flex: 1;
+}
+
+.flex-grid .col img {
+  display: block;
+}
+
+
+.sss-container {
+  margin: auto;
+  max-width: 100%;
+}
+
+.sss-responsive-image {
+  max-width: 100%;
+}
+
+.sss-cell img {
+  display: block;
+}
+
+@media screen and (min-width: 600px) {
+  .sss-grid {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+  }
+  .sss-cell {
+    width: 50%;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .sss-cell {
+    width: calc(100% / 3);
+  }
+}
+
+
+.ss-content {
+  
+}
+
+.ss-row {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+
+    -webkit-box-orient: horizontal; 
+    -moz-box-orient: horizontal;
+    box-orient: horizontal;
+    flex-direction: row;
+
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    box-pack: center;
+    justify-content: center;
+
+    -webkit-box-align: center;
+    -moz-box-align: center;
+    box-align: center;  
+    align-items: center;
+}
+
+.ss-cell {
+    width: calc(100% / 3);
+}
+.ss-cellXX {
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    box-flex: 1;
+    -webkit-flex: 1 1 auto;
+    flex: 1 1 auto; 
+
+    text-align: center;
+}
+.ss-cell img {
+   max-width:100%;
+ }

@@ -17,7 +17,42 @@
       <input type="password" ng-model="ctrl.panel.passwd" class="gf-form-input width-25" ng-change="ctrl.connectionChanged()"/>
     </div>
   </div>
-
 </div>
 
 
+<div class="editor-row">
+
+  <div class="section gf-form-group">
+    <h5 class="section-heading">Cameras</h5>
+
+    <div class="gf-form" ng-repeat="camera in ctrl.cameras">
+      <img height="40" width="60" style="background: #333;" ng-src="{{ camera.snapshot_url }}" />
+
+      <editor-checkbox class="gf-form-label width-14" model="camera._show" text="{{ camera.name }}" on-change="ctrl.configChanged()"></editor-checkbox>
+
+      <span class="gf-form-label width-8"><a href="http://{{ camera.host }}/" target="_blank">{{ camera.host }}</a></span>
+      <div class="gf-form-label gf-form-label--grow">
+        <i ng-show="camera.audioCap"    class="fa fa-volume-up"  ></i>
+        <i ng-show="camera.status != 0" class="fa fa-ban"  title="Status: {{ camera.status }}"></i>
+
+        &nbsp;&nbsp;
+      </div>
+
+      <label class="gf-form-label" >
+        <a class="pointer" ng-click="ctrl.moveCamera(camera, -1)" ng-hide="$first">
+          <i class="fa fa-arrow-up"></i> &nbsp;
+        </a>
+
+        <a class="pointer" ng-click="ctrl.moveCamera(camera, 1)" ng-hide="$last">
+          <i class="fa fa-arrow-down"></i> &nbsp;
+        </a>
+      </label>
+
+    </div>
+  </div>
+
+</div>
+
+<!--
+<pre>{{ ctrl.panel | json }}</pre>
+-->
