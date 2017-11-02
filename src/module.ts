@@ -25,6 +25,10 @@ class SurveillanceStationCtrl extends PanelCtrl {
     account: 'user',
     passwd: null,
     show: [], // ids that we will see
+    min:240,
+    max:780,
+    showName: true,
+    showAudio: true
   };
 
   auth = {
@@ -33,7 +37,7 @@ class SurveillanceStationCtrl extends PanelCtrl {
   };
 
   cameras: Array<any>;
-  player: VideoJSPlayer;
+  sheet: any; // CSS
 
   /** @ngInject **/
   constructor($scope, $injector, private templateSrv, private $http, private uiSegmentSrv, private datasourceSrv) {
@@ -46,13 +50,17 @@ class SurveillanceStationCtrl extends PanelCtrl {
     _.defaultsDeep(this.panel, this.defaults);
 
     this.connectionChanged();
+
+    // create a custom sheet
+    this.sheet = document.createElement('style');
+    document.body.appendChild(this.sheet);
+    this.styleChanged();
   }
 
   onInitEditMode() {
     this.addEditorTab('Options', 'public/plugins/natel-surveillance-station-panel/partials/editor.html',1);
     this.editorTabIndex = 1;
 
-debugger;
 /**
     this.player = videojs("editor_videojs_id", {}, () => {
       // Player (this) is initialized and ready.
@@ -91,6 +99,10 @@ debugger;
     this.api_ListCameras();
   //  this.api_GetInfo();
     //this.api_AuthLogin();
+  }
+
+  styleChanged() {
+    this.sheet.innerHTML = ".gallery a { flex-basis: "+this.panel.min+"px; max-width: "+this.panel.max+"px; }";
   }
 
    

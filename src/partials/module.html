@@ -1,10 +1,26 @@
 
-<div class="ss-content">
-  <div class="ss-row"> 
-    <div class="ss-cell" ng-repeat="camera in ctrl.cameras" ng-show="camera._show">
-      <a ng-click="ctrl.showFullscreen(camera)">
-        <img ng-src="{{ camera.snapshot_url }}" />
-      </a>
+<div class="gallery">
+  <a ng-repeat="camera in ctrl.cameras" 
+    ng-show="camera._show"
+    ng-click="ctrl.showFullscreen(camera)">
+    <img ng-src="{{ camera.snapshot_url }}" />
+    <div class="overlay">
+      &nbsp;&nbsp;
+      <span ng-show="ctrl.panel.showName || camera.status != 0">{{ camera.name }}</span>
+      <span  style="float:right; margin-right:5px;">
+        <i ng-show="camera.status != 0" class="fa fa-ban"  title="Status: {{ camera.status }}"></i>
+        <i ng-show="camera.audioCap && ctrl.panel.showAudio"    class="fa fa-volume-up"  ></i>
+      </span>
     </div>
-  </div>
+  </a>
+
+  <!-- hack that keeps the last row the same size -->
+  <a></a>
+  <a></a>
+  <a></a>
+  <a></a>
+  <a></a>
+  <a></a>
+  <a></a>
 </div>
+end

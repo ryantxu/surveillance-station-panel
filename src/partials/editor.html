@@ -22,6 +22,26 @@
       <input type="text" ng-model="ctrl.auth.sid" class="gf-form-input width-25" />
     </div>
   </div>
+
+
+  <div class="section gf-form-group">
+    <h5 class="section-heading">Settings</h5>
+
+    <div class="gf-form">
+      <span class="gf-form-label width-8">Min Width</span>
+      <input type="number" ng-model="ctrl.panel.min" class="gf-form-input width-6" ng-change="ctrl.styleChanged()" min="50" max="5000"/>
+    </div>
+
+    <div class="gf-form">
+      <span class="gf-form-label width-8">Max Width</span>
+      <input type="number" ng-model="ctrl.panel.max" class="gf-form-input width-6" ng-change="ctrl.styleChanged()" min="50" max="5000"/>
+    </div>
+
+    <gf-form-switch class="gf-form" label="Show Names" label-class="gf-form-label width-10" checked="ctrl.panel.showName" ></gf-form-switch>
+    <gf-form-switch class="gf-form" label="Show Audio" label-class="gf-form-label width-10" checked="ctrl.panel.showAudio" ></gf-form-switch>
+
+  </div>
+
 </div>
 
 
