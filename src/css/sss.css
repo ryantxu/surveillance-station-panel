@@ -9,13 +9,13 @@
   flex-grow: 1;
   flex-basis: 320px; 
   max-width: 640px;
-  margin: 5px;
+  margin: 2px;
 }
 
 .gallery img {
   height: 100%;
   width: 100%;
-  border: 2px solid rgb(41, 41, 41);
+  border: 2px solid transparent;
 }
 
 .gallery a:hover img {
