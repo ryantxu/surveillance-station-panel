@@ -40,9 +40,12 @@ class SurveillanceStationCtrl extends PanelCtrl {
   events: any;
   sheet: any; // CSS
 
+  loading = false;
+
   /** @ngInject **/
   constructor($scope, $injector, private $q, private $http, private uiSegmentSrv, private datasourceSrv) {
-    super($scope, $injector);
+  //  super($scope, $injector);
+    super();
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('refresh', this.onRefresh.bind(this));
