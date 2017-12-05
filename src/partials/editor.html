@@ -57,6 +57,8 @@
 
       <span class="gf-form-label width-8"><a href="http://{{ camera.host }}/" target="_blank">{{ camera.host }}</a></span>
       <div class="gf-form-label gf-form-label--grow">
+        <button class="btn btn-inverse btn-small" ng-click="ctrl.listEvents(camera);">events</button>
+
         <i ng-show="camera.audioCap"    class="fa fa-volume-up"  ></i>
         <i ng-show="camera.status != 0" class="fa fa-ban"  title="Status: {{ camera.status }}"></i>
 

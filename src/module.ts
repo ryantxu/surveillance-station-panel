@@ -1,5 +1,4 @@
 ///<reference path="../node_modules/grafana-sdk-mocks/app/headers/common.d.ts" />
-///<reference path="../hack/videojs.d.ts" />
 
 import config from 'app/core/config';
 import appEvents from 'app/core/app_events';
@@ -36,11 +35,13 @@ class SurveillanceStationCtrl extends PanelCtrl {
     sid: 'EdAYe8TV1ww6U1570NBN581800' // replace from query!!!
   };
 
+  api: any; // Info the API paths
   cameras: Array<any>;
+  events: any;
   sheet: any; // CSS
 
   /** @ngInject **/
-  constructor($scope, $injector, private templateSrv, private $http, private uiSegmentSrv, private datasourceSrv) {
+  constructor($scope, $injector, private $q, private $http, private uiSegmentSrv, private datasourceSrv) {
     super($scope, $injector);
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
@@ -49,12 +50,11 @@ class SurveillanceStationCtrl extends PanelCtrl {
     // defaults configs
     _.defaultsDeep(this.panel, this.defaults);
 
-    this.connectionChanged();
-
     // create a custom sheet
     this.sheet = document.createElement('style');
     document.body.appendChild(this.sheet);
     this.styleChanged();
+    this.urlChanged();
   }
 
   onInitEditMode() {
@@ -83,26 +83,55 @@ class SurveillanceStationCtrl extends PanelCtrl {
 
   //-----------------
 
-  connectionChanged() {
+  styleChanged() {
+    this.sheet.innerHTML = ".gallery a { flex-basis: "+this.panel.min+"px; max-width: "+this.panel.max+"px; }";
+  }
+
+  urlChanged() {
     delete this.error;
-    console.log('Connection changed XX');
     if(!this.panel.url.endsWith('/')) {
       this.panel.url += '/';
     }
+
+    let params = {
+      api: 'SYNO.API.Info',
+      method: 'Query',
+      version: 1,
+      query: 
+        'SYNO.API.Auth,'+
+        'SYNO.SurveillanceStation.Camera,'+
+        'SYNO.SurveillanceStation.Info,'+
+        'SYNO.SurveillanceStation.Streaming,'+
+        'SYNO.SurveillanceStation.VideoStream,'+
+        'SYNO.SurveillanceStation.AudioStream,'+
+        'SYNO.SurveillanceStation.Event'
+    };
+
+    return this.$http({
+      url: this.panel.url + 'query.cgi',
+      method: 'GET',
+      params: params
+    }).then((rsp) => {
+      this.api = rsp.data.data;
+      console.log( "SYNO.API.Info", this.api );
+      return this.authChanged();
+    }, err => {
+      console.log( "Error Connecting to URL", err );
+      this.error = err; //.data.error + " ["+err.status+"]";
+      this.inspector = {error: err};
+    });
+  }
+
+  authChanged() {
+    delete this.error;
+    console.log('Connection changed XX');
 
     if(_.isNil(this.panel.account) || _.isNil(this.panel.passwd)) {
       this.error = 'Missing Account/Password';
       return;
     }
 
-    this.api_API_Info();
-    this.api_ListCameras();
-  //  this.api_GetInfo();
-    //this.api_AuthLogin();
-  }
-
-  styleChanged() {
-    this.sheet.innerHTML = ".gallery a { flex-basis: "+this.panel.min+"px; max-width: "+this.panel.max+"px; }";
+    this.listCameras();
   }
 
    
@@ -132,37 +161,6 @@ class SurveillanceStationCtrl extends PanelCtrl {
   //-----------------
 
 
-  api_API_Info() {
-    console.log( "SYNO.API.Info", this.panel );
-    
-    // auth.cgi?
-    let params = {
-      api: 'SYNO.API.Info',
-      method: 'Query',
-      version: 1,
-      query: 
-        'SYNO.API.Auth,'+
-        'SYNO.SurveillanceStation.Camera,'+
-        'SYNO.SurveillanceStation.Info,'+
-        'SYNO.SurveillanceStation.Streaming,'+
-        'SYNO.SurveillanceStation.VideoStream,'+
-        'SYNO.SurveillanceStation.AudioStream,'+
-        'SYNO.SurveillanceStation.Event'
-    };
-
-    return this.$http({
-      url: this.panel.url + 'query.cgi',
-      method: 'GET',
-      params: params
-    }).then((rsp) => {
-      console.log( "SYNO.API.Info", rsp.data.data );
-    }, err => {
-      console.log( "GetInfo Error", err );
-      this.error = err; //.data.error + " ["+err.status+"]";
-      this.inspector = {error: err};
-    });
-  }
-
   api_AuthLogin() {
     console.log( "Do auth", this.panel );
     this.auth.count++;
@@ -191,32 +189,7 @@ class SurveillanceStationCtrl extends PanelCtrl {
     });
   }
 
-
-  api_GetInfo() {
-    console.log( "Do GetInfo", this.panel );
-    
-    // auth.cgi?
-    let params = {
-      api: 'SYNO.SurveillanceStation.Info',
-      method: 'GetInfo',
-      version: 6,
-      _sid: this.auth.sid
-    };
-
-    return this.$http({
-      url: this.panel.url + 'entry.cgi',
-      method: 'GET',
-      params: params
-    }).then((rsp) => {
-      console.log( "GetInfo OK", rsp );
-    }, err => {
-      console.log( "GetInfo Error", err );
-      this.error = err; //.data.error + " ["+err.status+"]";
-      this.inspector = {error: err};
-    });
-  }
-
-  api_ListCameras() {
+  listCameras() {
     // auth.cgi?
     let params = {
       api: 'SYNO.SurveillanceStation.Camera',
@@ -227,12 +200,8 @@ class SurveillanceStationCtrl extends PanelCtrl {
       _sid: this.auth.sid
     };
 
-    return this.$http({
-      url: this.panel.url + 'entry.cgi',
-      method: 'GET',
-      params: params
-    }).then((rsp) => {
-      let cameras = rsp.data.data.cameras;
+    return this._doAPI( params ).then( (rsp) => {
+      let cameras = rsp.cameras;
       let count = 0;
       for(let i=0; i<this.panel.show.length; i++) {
         var index = _.findIndex(cameras, ['id', this.panel.show[i]]);
@@ -254,12 +223,67 @@ class SurveillanceStationCtrl extends PanelCtrl {
       }
 
       this.cameras = cameras;
-      console.log( "api_ListCameras", this.cameras );
+      console.log( "listCameras", this.cameras );
       this.onRefresh();
+    });
+  }
+
+
+  listEvents( camera ) {
+    // auth.cgi?
+    let params = {
+      api: 'SYNO.SurveillanceStation.Event',
+      method: 'List',
+      version: 4,
+      _sid: this.auth.sid,
+
+      locked: 0,
+      cameraIds: 1,
+      evtSrcType: 2,
+
+      offset: 0,
+      limit: 80,
+
+      fromTime: 0,
+      toTime: 0,
+
+      from_start: 0,
+      from_end: 0,
+
+      includeAllCam: true,
+      blIncludeSnapshot: true,
+    };
+
+    return this._doAPI( params ).then( (rsp) => {
+      
+      this.events = rsp;
+      console.log( "listEvents", rsp );
+    });
+  }
+
+
+
+  _doAPI( params: any ) {
+    let info = this.api[params.api];
+    if(_.isNil(info)) {
+      throw "Unkonwn API";
+      this.$q.reject( "Unknown API" );
+    }
+
+    this.loading = true;
+    return this.$http({
+      url: this.panel.url + info.path,
+      method: 'GET',
+      params: params
+    }).then((rsp) => {
+      this.loading = false;
+      if(rsp.data.success) {
+        return rsp.data.data;
+      }
+      return this.$q.reject( rsp.data );
     }, err => {
-      console.log( "api_ListCameras", err );
-      this.error = err; //.data.error + " ["+err.status+"]";
-      this.inspector = {error: err};
+      this.loading = false;
+      return this.$q.reject(err);
     });
   }
 }

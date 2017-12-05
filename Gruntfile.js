@@ -12,13 +12,6 @@ module.exports = function(grunt) {
     clean: ['dist'],
 
     copy: {
-      hack_grafana_sdk: { // See: https://github.com/grafana/grafana-sdk-mocks/issues/1
-        expand: true,
-        flatten: true,
-        cwd: 'hack',
-        src: ['*.ts'],
-        dest: 'node_modules/grafana-sdk-mocks/app/headers'
-      },
 
       video_js: {
         expand: true,
@@ -26,14 +19,6 @@ module.exports = function(grunt) {
         cwd: 'node_modules/video.js/dist',
         src: [ '*.js', '*.css', 'font/*', 'lang/*', 'ie8/*' ],
         dest: 'dist/lib/'
-      },
-
-      video_js2: {
-        expand: true,
-        flatten: false,
-        cwd: 'node_modules/video.js/dist',
-        src: [ '*.js', '*.css', 'font/*', 'lang/*', 'ie8/*' ],
-        dest: 'src/lib/'
       },
 
       dist_js: {
@@ -120,7 +105,6 @@ module.exports = function(grunt) {
 
   grunt.registerTask('default', [
     'clean',
-    'copy:hack_grafana_sdk',
     'copy:dist_js',
     'typescript:build',
     'copy:dist_html',
@@ -128,7 +112,6 @@ module.exports = function(grunt) {
     'copy:dist_img',
     'copy:dist_statics',
     'copy:video_js',
-    'copy:video_js2',
     'string-replace'
   ]);
 };
