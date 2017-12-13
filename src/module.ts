@@ -19,6 +19,8 @@ import './lib/video-js.css!';
 class SurveillanceStationCtrl extends PanelCtrl {
   static templateUrl = 'partials/module.html';
 
+  authkey = 'syno.auth.info'; // const
+
   defaults = {
     url: 'https://your-synology-server:5001/webapi/',
     account: 'user',
@@ -31,27 +33,28 @@ class SurveillanceStationCtrl extends PanelCtrl {
   };
 
   auth = {
-    count: 0,
-    sid: 'EdAYe8TV1ww6U1570NBN581800' // replace from query!!!
+    status: 'error',
+    sid: null,
+    when: -1,
+    hash: 'xxx'
   };
 
   api: any; // Info the API paths
   cameras: Array<any>;
   events: any;
   sheet: any; // CSS
-
-  loading = false;
+  timeInfo = "NOW"; // TODO in root panel?
 
   /** @ngInject **/
   constructor($scope, $injector, private $q, private $http, private uiSegmentSrv, private datasourceSrv) {
-  //  super($scope, $injector);
-    super();
+    super($scope, $injector);
 
     this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
     this.events.on('refresh', this.onRefresh.bind(this));
 
     // defaults configs
     _.defaultsDeep(this.panel, this.defaults);
+
 
     // create a custom sheet
     this.sheet = document.createElement('style');
@@ -127,14 +130,19 @@ class SurveillanceStationCtrl extends PanelCtrl {
 
   authChanged() {
     delete this.error;
-    console.log('Connection changed XX');
-
     if(_.isNil(this.panel.account) || _.isNil(this.panel.passwd)) {
       this.error = 'Missing Account/Password';
       return;
     }
 
-    this.listCameras();
+    let oldauth = localStorage.getItem(this.authkey);
+    if(oldauth != null) {
+      this.auth = JSON.parse(oldauth);
+    }
+
+    this.api_AuthLogin().then( rsp => {
+      this.listCameras();
+    });
   }
 
    
@@ -165,9 +173,6 @@ class SurveillanceStationCtrl extends PanelCtrl {
 
 
   api_AuthLogin() {
-    console.log( "Do auth", this.panel );
-    this.auth.count++;
-    
     // auth.cgi?
     let params = {
       api: 'SYNO.API.Auth',
@@ -179,12 +184,16 @@ class SurveillanceStationCtrl extends PanelCtrl {
       format:'sid'
     };
 
+    console.log('Getting SID for: ', params.account);
     return this.$http({
       url: this.panel.url + 'auth.cgi',
       method: 'GET',
       params: params
     }).then((rsp) => {
-      console.log( "Auth OK", rsp );
+      this.auth.when = Date.now();
+      this.auth.sid = rsp.data.data.sid;
+      localStorage.setItem(this.authkey, JSON.stringify(this.auth));
+      console.log( "Auth OK", this.auth, rsp.data );
     }, err => {
       console.log( "Auth Error", err );
       this.error = err; //.data.error + " ["+err.status+"]";
